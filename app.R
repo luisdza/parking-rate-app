@@ -2,6 +2,12 @@ library(shiny)
 library(DT)
 library(bslib)
 library(lpSolve)
+library(htmltools)
+
+# Helper function to add clarity tags to UI elements
+tagAppend <- function(tag, ...) {
+  tagList(tag, ...)
+}
 
 source("ui_tab_input.R")
 source("ui_tab_calculation.R")
@@ -9,7 +15,27 @@ source("server_tab_input.R")
 source("server_tab_calculation.R")
 
 ui <- fluidPage(
-  theme = bs_theme(bootswatch = "minty"),  tags$head(
+  theme = bs_theme(bootswatch = "minty"),  
+  tags$head(    # Microsoft Clarity Analytics
+    tags$script(HTML('
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "rkmlsglfct");
+    ')),
+    
+    # JavaScript to handle custom clarity events
+    tags$script(HTML('
+      $(document).on("shiny:connected", function() {
+        Shiny.addCustomMessageHandler("clarity-track-event", function(message) {
+          if (window.clarity && typeof window.clarity === "function") {
+            clarity("event", message.type, message.metadata || {});
+            console.log("Clarity event tracked:", message.type, message.metadata);
+          }
+        });
+      });
+    ')),
     tags$style(HTML("
       :root {
         --primary-color: #5BBDC4;        /* Minty theme primary color */
@@ -77,15 +103,23 @@ ui <- fluidPage(
         border-radius: 5px;
         padding: 10px;
         border: 1px solid var(--border-light);
-      }
-      .nav-tabs .nav-link.active {
+      }      .nav-tabs .nav-link.active {
         font-weight: bold;
         border-top: 3px solid var(--accent-color);
+      }
+      .sample-link {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .sample-link:hover {
+        text-decoration: underline;
+        color: var(--secondary-color);
       }
     "))
   ),
   div(class = "header-container",
-      h1(class = "app-title", "ParkRate Navigator"),
+      h1(class = "app-title", "🅿️ ParkRate Navigator 🧭"),
       p(class = "app-subtitle", "Find the most cost-effective parking option for your needs")
   ),
   tabsetPanel(

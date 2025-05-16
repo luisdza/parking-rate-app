@@ -112,7 +112,7 @@ server_tab_input <- function(input, output, session, data_store) {
         searchHighlight = TRUE,
         columnDefs = list(list(
           targets = 4,
-          render = JS("function(data, type, row) { return 'R' + parseFloat(data).toFixed(2); }")
+          render = JS("function(data, type, row) { return parseFloat(data).toFixed(2); }")
         ))
       )    ) %>% 
     formatStyle(
@@ -203,6 +203,94 @@ server_tab_input <- function(input, output, session, data_store) {
   
   # Observer to switch to calculation tab
   observeEvent(input$goto_calc, {
+    session$sendCustomMessage(type = 'clarity-track-event', 
+                             message = list(
+                               type = 'navigate_to_calculation',
+                               metadata = list(
+                                 ratesCount = nrow(data_store())
+                               )
+                             ))
     updateTabsetPanel(session, "main_tabs", selected = "Calculation")
+  })
+  
+  # Observer to track add row action for Clarity analytics
+  observeEvent(input$add_row, {
+    session$sendCustomMessage(type = 'clarity-track-event', 
+                             message = list(
+                               type = 'add_rate',
+                               metadata = list(
+                                 location = input$location,
+                                 durationType = input$duration_type,
+                                 cost = input$cost
+                               )
+                             ))
+    # ...existing code...
+  })
+    # Observer to track delete row action for Clarity analytics
+  observeEvent(input$delete_row, {
+    session$sendCustomMessage(type = 'clarity-track-event', 
+                             message = list(
+                               type = 'delete_rate',
+                               metadata = list(
+                                 selectedRow = input$rate_table_rows_selected
+                               )
+                             ))
+    # ...existing code...
+  })
+  
+  # Observer to load example data file
+  observeEvent(input$load_example_data, {
+    tryCatch({
+      example_file_path <- "example_rates_with_daily.csv"
+      
+      if (file.exists(example_file_path)) {
+        new_data <- read.csv(example_file_path, stringsAsFactors = FALSE)
+        
+        # Clear current data
+        data_store(data.frame(
+          Location = character(0),
+          DurationType = character(0),
+          DurationFrom = numeric(0),
+          DurationTo = numeric(0),
+          Cost = numeric(0)
+        ))
+        
+        # Add each row to the data store
+        current <- data_store()
+        for (i in seq_len(nrow(new_data))) {
+          row <- new_data[i, ]
+          current <- rbind(current, row)
+        }
+        
+        data_store(current)
+          # Track event in Clarity
+        session$sendCustomMessage(type = 'clarity-track-event', 
+                                message = list(
+                                  type = 'load_example_data',
+                                  metadata = list(
+                                    rows_loaded = nrow(new_data),
+                                    file_name = "example_rates_with_daily.csv"
+                                  )
+                                ))
+                                
+        showModal(modalDialog(
+          title = "Example Data Loaded",
+          "The example data has been successfully loaded.",
+          easyClose = TRUE
+        ))
+      } else {
+        showModal(modalDialog(
+          title = "File Not Found",
+          "Example file could not be found.",
+          easyClose = TRUE
+        ))
+      }
+    }, error = function(e) {
+      showModal(modalDialog(
+        title = "Error",
+        paste("Failed to load example data:", e$message),
+        easyClose = TRUE
+      ))
+    })
   })
 }

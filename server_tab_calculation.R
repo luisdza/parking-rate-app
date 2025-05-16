@@ -5,6 +5,17 @@ library(lpSolve)
 server_tab_calculation <- function(input, output, session, data_store) {
   # Calculate optimal rate
   observeEvent(input$calc_btn, {
+    # Track calculation event for Clarity analytics
+    session$sendCustomMessage(type = 'clarity-track-event', 
+                             message = list(
+                               type = 'calculate_optimal_rate',
+                               metadata = list(
+                                 hours_per_day = input$hours_per_day,
+                                 days_per_month = input$days_per_month,
+                                 ratesCount = if (!is.null(data_store())) nrow(data_store()) else 0
+                               )
+                             ))
+    
     req(data_store())
     df <- data_store()
     
@@ -86,7 +97,7 @@ server_tab_calculation <- function(input, output, session, data_store) {
       
       # Update outputs
       output$result_output <- renderText({
-        sprintf('Optimal parking option: %s with monthly cost: R%.2f', 
+        sprintf('Optimal parking option: %s with monthly cost: %.2f', 
                 selected_name, solution$objval)
       })
       
@@ -112,7 +123,7 @@ server_tab_calculation <- function(input, output, session, data_store) {
             'Monthly Rate'
           }
           
-          sprintf('%s: %s Rate - Location=%s, %s, Base Rate=R%.2f, Monthly Cost=R%.2f %s',
+          sprintf('%s: %s Rate - Location=%s, %s, Base Rate=%.2f, Monthly Cost=%.2f %s',
                   names(costs)[i],
                   rate_type_full,
                   type_df$Location,
@@ -132,7 +143,7 @@ server_tab_calculation <- function(input, output, session, data_store) {
               '',
               'Summary:',
               sprintf('- Total options evaluated: %d', length(costs)),
-              sprintf('- Optimal monthly cost: R%.2f', solution$objval),
+              sprintf('- Optimal monthly cost: %.2f', solution$objval),
               sep = '\n')
       })
       

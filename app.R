@@ -10,7 +10,7 @@ source("server_tab_calculation.R")
 
 ui <- fluidPage(
   theme = bs_theme(bootswatch = "minty"),
-  titlePanel("Parking Rate Manager"),
+  titlePanel("ParkRate Navigator"),
   tabsetPanel(
     id = "main_tabs",
     tab_input,

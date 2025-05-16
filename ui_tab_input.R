@@ -9,13 +9,12 @@ tab_input <- tabPanel("Input Form",
         numericInput("duration_from", "Duration From (hrs)", value = 1, min = 0),
         numericInput("duration_to", "Duration To (hrs)", value = 2, min = 0)
       ),
-      numericInput("cost", "Cost (R)", value = 0, min = 0),
-      fluidRow(
+      numericInput("cost", "Cost (R)", value = 0, min = 0),      fluidRow(
         column(6, actionButton("add_row", "Add Entry", class = "btn-success")),
         column(6, actionButton("delete_row", "Delete Selected Entry", class = "btn-danger"))
       ),
-      br(), br(),
-      actionButton("calc_btn", "Calculate", class = "btn-primary")
+      br(),
+      actionButton("goto_calc", "Calculate Rates", class = "btn-primary", width = "100%")
     ),    mainPanel(
       DTOutput("rate_table")
     )

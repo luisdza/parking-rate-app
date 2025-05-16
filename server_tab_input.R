@@ -103,7 +103,7 @@ server_tab_input <- function(input, output, session, data_store) {
       )
     }
     
-    datatable(df, selection = "single", options = list(pageLength = 10))
+    datatable(df, selection = "single", options = list(pageLength = 100))
   })
     observeEvent(input$csv_file, {
     req(input$csv_file)
@@ -176,4 +176,9 @@ server_tab_input <- function(input, output, session, data_store) {
       write.csv(data_store(), file, row.names = FALSE)
     }
   )
+  
+  # Observer to switch to calculation tab
+  observeEvent(input$goto_calc, {
+    updateTabsetPanel(session, "main_tabs", selected = "Calculation")
+  })
 }

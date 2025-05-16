@@ -1,124 +1,112 @@
 # Parking Rate Manager
 
-A Shiny application for managing and calculating parking rates across different locations.
+A Shiny application for helping users determine the most cost-effective parking option based on their usage patterns.
 
 ## Features
 
-- **Rate Management**: Add and manage parking rates for different locations
-- **Flexible Duration Types**: Support for hourly, daily, and monthly rates
-- **Data Validation**: Prevents overlapping time ranges and duplicate monthly rates
-- **CSV Import**: Bulk import rates from CSV files
-- **Cost Calculation**: Calculate total parking costs across all entries
+- **Rate Management**: Add, edit, and delete parking rates for various locations
+- **Multiple Rate Types**: Support for hourly, daily, and monthly rates
+- **Rate Optimisation**: Calculates the most cost-effective parking option based on usage
+- **Import/Export**: Import rates from CSV files
+- **Interactive UI**: User-friendly interface with tabbed navigation
 
-## System Requirements
+## Application Structure
 
-- R
-- Required R packages:
+```mermaid
+flowchart TD
+    subgraph UI
+        InputForm["Input Form"]
+        CalcTab["Calculation Tab"]
+        DataTable["Data Table"]
+        DebugOutput["Debug Output"]
+    end
+    
+    subgraph Data
+        RatesData["Parking Rates Data"]
+    end
+    
+    subgraph Logic
+        InputHandler["Input Tab Handler"]
+        CalcHandler["Calculation Tab Handler"]
+        OptimizerEngine["Optimizer Engine"]
+    end
+    
+    InputForm -->|Add/Edit Rates| InputHandler
+    InputHandler -->|Store Data| RatesData
+    CalcTab -->|Calculate Request| CalcHandler
+    RatesData -->|Retrieve Rates| CalcHandler
+    CalcHandler -->|Send to Optimizer| OptimizerEngine
+    OptimizerEngine -->|Optimal Result| CalcHandler
+    CalcHandler -->|Display Results| DebugOutput
+    InputHandler -->|Display Table| DataTable
+    InputForm -->|"Go to Calc Tab"| CalcTab
+```
+
+## How It Works
+
+1. **Input Tab**: Users can add parking rates with the following information:
+   - Location name
+   - Rate type (hourly, daily, or monthly)
+   - Duration range (for hourly rates)
+   - Cost
+
+2. **Calculation Tab**: Users input their parking usage patterns:
+   - Hours per day
+   - Days per month
+   - The application then calculates the most cost-effective parking option
+
+3. **Optimization Logic**:
+   - For hourly rates: `Cost = Rate × Hours per day × Days per month`
+   - For daily rates: `Cost = Rate × Days per month`
+   - For monthly rates: `Cost = Rate`
+   - The application uses linear programming to find the lowest-cost option
+
+## File Structure
+
+- `app.R`: Main application file with Shiny app initialization
+- `ui_tab_input.R`: UI components for the input tab
+- `ui_tab_calculation.R`: UI components for the calculation tab
+- `server_tab_input.R`: Server logic for the input tab
+- `server_tab_calculation.R`: Server logic for the calculation tab
+- `*.csv`: Sample rate files for different locations
+
+## Requirements
+
+- R (>= 4.0.0)
+- Packages:
   - shiny
   - DT (DataTables)
-  - bslib (Bootstrap themes)
+  - bslib
+  - lpSolve
 
-## Installation
+## Installation and Usage
 
-1. Clone this repository
-2. Install the required R packages:
-   ```R
-   install.packages(c("shiny", "DT", "bslib"))
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/parking-rate-app.git
+   cd parking-rate-app
    ```
-3. Run the application:
-   ```R
+
+2. Install required packages if not already installed
+   ```r
+   install.packages(c("shiny", "DT", "bslib", "lpSolve"))
+   ```
+
+3. Run the application
+   ```r
    shiny::runApp()
    ```
 
-## Architecture
+## Sample Data
 
-```mermaid
-flowchart LR
-    subgraph Input["Input Form"]
-        direction TB
-        CSV[("CSV Import")]
-        LOC[("Location Entry")]
-        DUR[("Duration Settings")]
-        COST[("Cost Entry")]
-        CTL["Control Buttons"]
-        CSV --> LOC
-        LOC --> DUR
-        DUR --> COST
-        COST --> CTL
-    end
+The application comes with sample CSV files:
+- `rosebank_rates.csv`: Sample rates for Rosebank location
+- `example_rates_with_daily.csv`: Example rates including daily options
 
-    subgraph DataStore["Data Management"]
-        direction TB
-        VAL["Data Validation"]
-        STORE[("Data Storage")]
-        VAL --> STORE
-    end
+## Contributing
 
-    subgraph Calculation["Calculation Tab"]
-        TOTAL["Total Cost Calculation"]
-        DISPLAY["Result Display"]
-        TOTAL --> DISPLAY
-    end
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-    Input --> DataStore
-    DataStore --> Calculation
-```
+## License
 
-## Usage
-
-1. **Input Form Tab**:
-   - Enter location name
-   - Select duration type (Hourly/Daily/Monthly)
-   - For hourly rates:
-     - Set duration range (from/to hours)
-   - Enter cost amount
-   - Click "Add Entry" to save
-   - Use "Delete Selected Entry" to remove rates
-
-2. **CSV Import**:
-   - Prepare CSV with the following columns:
-     - `Location`: Name of the parking location (text)
-     - `DurationType`: Either "Hourly", "Daily", or "Monthly"
-     - `DurationFrom`: Start hour for hourly rates (number, leave empty for monthly)
-     - `DurationTo`: End hour for hourly rates (number, leave empty for monthly)
-     - `Cost`: Rate amount in currency (number)
-   - Use the CSV import button to bulk load rates   Example CSV content:
-   ```csv
-   Location,DurationType,DurationFrom,DurationTo,Cost
-   City Central,Hourly,0,2,15
-   City Central,Hourly,2,4,25
-   City Central,Daily,,,100
-   City Central,Monthly,,,500
-   Mall Parking,Hourly,0,3,20
-   Mall Parking,Daily,,,90
-   Mall Parking,Monthly,,,600
-   ```   Notes:
-   - For daily and monthly rates, leave DurationFrom and DurationTo empty
-   - Hourly rates must not overlap for the same location
-   - Only one daily rate is allowed per location
-   - Only one monthly rate is allowed per location
-   - Cost values should be numbers without currency symbols
-
-3. **Calculation Tab**:
-   - Set the hours per day and days per month parameters
-   - Click "Calculate Optimal Rate" to find the most cost-effective option
-   - The calculation will:
-     - Apply hourly rates that match your daily hours
-     - Calculate monthly costs for daily rates (daily rate × days per month)
-     - Compare all applicable options (hourly, daily, and monthly)
-     - Select the lowest cost option
-   - View detailed results showing the optimal choice and calculations
-
-## Data Validation
-
-The application includes several validation checks:
-- Empty location names are not allowed
-- Hourly duration ranges cannot overlap for the same location
-- Only one daily rate is allowed per location
-- Only one monthly rate is allowed per location
-- CSV imports are validated for format and data consistency
-
-## Styling
-
-The application uses the "minty" Bootswatch theme for a clean, modern appearance.
-
+This project is licensed under the MIT License - see the LICENSE file for details.

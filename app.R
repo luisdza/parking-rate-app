@@ -9,8 +9,85 @@ source("server_tab_input.R")
 source("server_tab_calculation.R")
 
 ui <- fluidPage(
-  theme = bs_theme(bootswatch = "minty"),
-  titlePanel("ParkRate Navigator"),
+  theme = bs_theme(bootswatch = "minty"),  tags$head(
+    tags$style(HTML("
+      :root {
+        --primary-color: #5BBDC4;        /* Minty theme primary color */
+        --secondary-color: #6cc3d5;      /* Slightly lighter blue */
+        --accent-color: #78c2ad;         /* Minty theme accent color */
+        --light-bg: #f8f9fa;             /* Light background */
+        --dark-text: #2c3e50;            /* Dark text color */
+        --border-light: #e9ecef;         /* Light border */
+        --info-bg: #d1ecf1;              /* Light info background */
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --border-radius: 8px;
+      }
+      
+      .header-container {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+      }
+      .app-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+      }
+      .app-subtitle {
+        font-size: 14px;
+        margin-top: 5px;
+        opacity: 0.9;
+      }
+      .sidebar {
+        background-color: var(--light-bg);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        box-shadow: var(--shadow-sm);
+      }
+      .result-container {
+        background-color: var(--light-bg);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-top: 15px;
+        box-shadow: var(--shadow-sm);
+      }
+      .info-box {
+        padding: 10px; 
+        background-color: var(--info-bg); 
+        border-radius: 5px; 
+        margin-bottom: 15px;
+      }
+      .btn-primary, .btn-success {
+        border-radius: 5px;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+      }
+      .section-header {
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        color: var(--dark-text);
+      }
+      #debug_output, #result_output {
+        background-color: white;
+        border-radius: 5px;
+        padding: 10px;
+        border: 1px solid var(--border-light);
+      }
+      .nav-tabs .nav-link.active {
+        font-weight: bold;
+        border-top: 3px solid var(--accent-color);
+      }
+    "))
+  ),
+  div(class = "header-container",
+      h1(class = "app-title", "ParkRate Navigator"),
+      p(class = "app-subtitle", "Find the most cost-effective parking option for your needs")
+  ),
   tabsetPanel(
     id = "main_tabs",
     tab_input,

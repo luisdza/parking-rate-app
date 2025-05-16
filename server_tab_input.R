@@ -90,8 +90,7 @@ server_tab_input <- function(input, output, session, data_store) {
       Cost = numeric(0)
     ))
   })
-  
-  output$rate_table <- renderDT({
+    output$rate_table <- renderDT({
     df <- data_store()
     if (nrow(df) == 0) {
       df <- data.frame(
@@ -103,7 +102,32 @@ server_tab_input <- function(input, output, session, data_store) {
       )
     }
     
-    datatable(df, selection = "single", options = list(pageLength = 100))
+    datatable(df, 
+      selection = "single", 
+      rownames = FALSE,
+      class = "compact stripe hover",
+      options = list(
+        pageLength = 100,
+        lengthMenu = list(c(10, 25, 50, 100), c("10", "25", "50", "100")),
+        searchHighlight = TRUE,
+        columnDefs = list(list(
+          targets = 4,
+          render = JS("function(data, type, row) { return 'R' + parseFloat(data).toFixed(2); }")
+        ))
+      )    ) %>% 
+    formatStyle(
+      columns = c("Location", "DurationType", "DurationFrom", "DurationTo", "Cost"),
+      backgroundColor = "var(--light-bg)",
+      borderRadius = "5px"
+    ) %>%
+    formatStyle(
+      'DurationType',
+      target = 'row',
+      backgroundColor = styleEqual(
+        c('Hourly', 'Daily', 'Monthly'),
+        c('rgba(120, 194, 173, 0.1)', 'rgba(120, 194, 173, 0.2)', 'rgba(120, 194, 173, 0.3)')
+      )
+    )
   })
     observeEvent(input$csv_file, {
     req(input$csv_file)

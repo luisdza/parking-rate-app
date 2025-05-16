@@ -1,0 +1,32 @@
+Location,DurationType,DurationFrom,DurationTo,Cost
+The Zone,Hourly,0,0.25,0
+The Zone,Hourly,0.25,2,10
+The Zone,Hourly,2,3,15
+The Zone,Hourly,3,4,20
+The Zone,Hourly,4,5,25
+The Zone,Hourly,5,6,35
+The Zone,Hourly,6,8,40
+The Zone,Hourly,8,24,50
+The Firs,Hourly,0,0.25,0
+The Firs,Hourly,0.25,1,10
+The Firs,Hourly,1,2,15
+The Firs,Hourly,2,4,20
+The Firs,Hourly,4,6,25
+The Firs,Hourly,6,12,50
+The Firs,Hourly,12,24,80
+Baker Square,Hourly,0,0.25,0
+Baker Square,Hourly,0.25,2,5
+Baker Square,Hourly,2,4,10
+Baker Square,Hourly,4,6,30
+Baker Square,Hourly,6,12,60
+Baker Square,Hourly,12,24,120
+Baker Square,Hourly,24,160,250
+Hyprop,Hourly,0,0.25,0
+Hyprop,Hourly,0.25,2,10
+Hyprop,Hourly,2,4,15
+Hyprop,Hourly,4,5,25
+Hyprop,Hourly,5,6,35
+Hyprop,Hourly,6,12,50
+Hyprop,Hourly,12,160,100
+The Zone Basement,Monthly,,,920
+Africa Work,Monthly,,,1750

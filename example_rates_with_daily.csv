@@ -1,0 +1,27 @@
+Location,DurationType,DurationFrom,DurationTo,Cost
+The Zone,Hourly,0,0.25,0
+The Zone,Hourly,0.25,2,10
+The Zone,Hourly,2,3,15
+The Zone,Hourly,3,4,20
+The Zone,Hourly,4,5,25
+The Zone,Hourly,5,6,35
+The Zone,Hourly,6,8,40
+The Zone,Hourly,8,24,50
+The Zone,Daily,,,120
+The Zone,Monthly,,,1800
+The Firs,Hourly,0,0.25,0
+The Firs,Hourly,0.25,1,10
+The Firs,Hourly,1,2,15
+The Firs,Hourly,2,4,20
+The Firs,Hourly,4,6,25
+The Firs,Hourly,6,12,50
+The Firs,Hourly,12,24,80
+The Firs,Daily,,,150
+The Firs,Monthly,,,2200
+Baker Square,Hourly,0,0.25,0
+Baker Square,Hourly,0.25,2,5
+Baker Square,Hourly,2,4,10
+Baker Square,Hourly,4,6,30
+Baker Square,Hourly,6,12,60
+Baker Square,Daily,,,100
+Baker Square,Monthly,,,1500
